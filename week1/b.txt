@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include<stdio.h>
+#include <stdlib.h>
+
+
+void reverseFile(FILE *file1, FILE *file2)
+void countChar_Lines(char *filename)
+{
+{
+    char c = fgetc(file1);
+    int charCount=0, lineCount=0;
+    if (c==EOF)
+    FILE *file1 = fopen(filename,"r");
+    {
+    char c = fgetc(file1);
+        return;
+    while (c!=EOF)
+    }
+    {
+    reverseFile(file1,file2);
+        charCount++;
+    fputc(c,file2);
+        if (c=='\n')
+}
+        {
+
+            lineCount++;
+int main()
+            charCount--;
+{
+        }
+    char srcFile[128], destFile[128];
+        c = fgetc(file1);
+    printf("\nEnter the source file : ");
+    }
+    scanf("%s",srcFile);
+    printf("\nNumber of charcters is: %d",charCount);
+    printf("\nEnter the destination file : ");
+    printf("\nNumber of Lines in file is: %d\n",lineCount);
+    scanf("%s", destFile);
+    fclose(file1);
+    FILE *file1 = fopen(srcFile,"r");
+}
+    FILE *file2 = fopen(destFile,"w+");
+
+    reverseFile(file1,file2);
+int main()
+    printf("Reversed successfully, open file named %s to view",destFile);
+{
+    fclose(file1);
+    char filename[100];
+    fclose(file2);
+    printf("Enter the filename to open for reading: \n");
+    return 0;
+    scanf("%s", filename);
+}    countChar_Lines(filename);
+    return 0;
+}
