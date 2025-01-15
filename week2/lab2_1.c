@@ -1,21 +1,21 @@
 #include <stdio.h>
 
-void getNewFile(char *cfilename, char *filename)
+void removeSpace(char *srcFile, char *destFile)
 {
-    FILE *file1 = fopen(cfilename, "r");
-    FILE *file2 = fopen(filename, "w+");
+    FILE *file1 = fopen(srcFile, "r");
+    FILE *file2 = fopen(destFile, "w");
     char c = fgetc(file1);
     while (c != EOF)
     {
         if (c == ' ')
         {
-            c = fgetc(file1);
-            if (c == ' ')
+            while (c == ' ')
             {
-                continue;
+                c = fgetc(file1);
             }
-            else
+            if (c != ' ')
             {
+                fputc(' ', file2);
                 fputc(c, file2);
             }
         }
@@ -29,12 +29,13 @@ void getNewFile(char *cfilename, char *filename)
     fclose(file2);
 }
 
-void main()
+int main()
 {
-    char filename[128], cfilename[128];
-    printf("\nEnter the c-filename: ");
-    scanf("%s", cfilename);
-    printf("\nEnter the filename: ");
-    scanf("%s", filename);
-    getNewFile(cfilename, filename);
+    char srcFile[1024], destFile[1024];
+    printf("\nEnter the srcFile: ");
+    scanf("%s", srcFile);
+    printf("\nEnter the destFile: ");
+    scanf("%s", destFile);
+    removeSpace(srcFile, destFile);
+    return 0;
 }
