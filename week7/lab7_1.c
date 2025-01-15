@@ -1,19 +1,19 @@
 #include <stdio.h>
 
-VOID removeSpace(CHAR *srcFile, CHAR *destFile)
+void removeSpace(char *srcFile, char *destFile)
 {
     FILE *file1 = fopen(srcFile, "r");
     FILE *file2 = fopen(destFile, "w");
-    CHAR c = fgetc(file1);
+    char c = fgetc(file1);
     while (c != EOF)
     {
-        IF (c == ' ')
+        if (c == ' ')
         {
             while (c == ' ')
             {
                 c = fgetc(file1);
             }
-            IF (c != ' ')
+            if (c != ' ')
             {
                 fputc(' ', file2);
                 fputc(c, file2);
@@ -29,13 +29,13 @@ VOID removeSpace(CHAR *srcFile, CHAR *destFile)
     fclose(file2);
 }
 
-INT main()
+int main()
 {
-    CHAR srcFile[1024], destFile[1024];
+    char srcFile[1024], destFile[1024];
     printf("\nEnter the srcFile: ");
     scanf("%s", srcFile);
     printf("\nEnter the destFile: ");
     scanf("%s", destFile);
     removeSpace(srcFile, destFile);
-    RETURN 0;
+    return 0;
 }
