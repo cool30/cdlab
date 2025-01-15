@@ -9,7 +9,7 @@ void discardPreproessor(char *srcFile, char *destFile)
     char c = fgetc(file1);
     while (c != EOF)
     {
-        // this is done here if string is include word preprocessor word exists in printf statement
+        // this is done if string has pre-processor directives word in print statement
         if (c == '\"')
         {
             fputc(c, file2);
