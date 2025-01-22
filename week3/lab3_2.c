@@ -1,55 +1,170 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-#define size 1024
+#define MAX_TOKEN_LENGTH 100
+#define MAX_TOKENS 1000
 
-void discardPreproessor(char *srcFile, char *destFile)
-{
-    FILE *file1 = fopen(srcFile, "r");
-    FILE *file2 = fopen(destFile, "w");
-    char c = fgetc(file1);
-    while (c != EOF)
-    {
-        // this is done if string has pre-processor directives word in print statement
-        if (c == '\"')
-        {
-            fputc(c, file2);
-            c = fgetc(file1);
-            while (c != '\"' && c != EOF)
-            {
-                fputc(c, file2);
-                c = fgetc(file1);
-            }
-            if (c == '\"')
-            {
-                fputc(c, file2);
-            }
+typedef enum {
+    TOKEN_IDENTIFIER,
+    TOKEN_NUMBER,
+    TOKEN_OPERATOR,
+    TOKEN_KEYWORD,
+    TOKEN_STRING,
+    TOKEN_COMMENT,
+    TOKEN_PREPROCESSOR,
+    TOKEN_UNKNOWN,
+    TOKEN_EOF
+} TokenType;
+
+typedef struct {
+    int row;
+    int col;
+    TokenType type;
+    char value[MAX_TOKEN_LENGTH];
+} Token;
+
+const char *keywords[] = {
+    "int", "float", "double", "char", "return", "if", "else", "while", "for", "void", NULL
+};
+
+int isKeyword(const char *word) {
+    for (int i = 0; keywords[i] != NULL; i++) {
+        if (strcmp(word, keywords[i]) == 0) {
+            return 1;
         }
-        // logic to skip directives
-        else if (c == '#')
-        {
-            while (c != '\n' && c != EOF)
-            {
-                c = fgetc(file1);
-            }
-        }
-        // any other characters
-        else
-        {
-            fputc(c, file2);
-        }
-        c = fgetc(file1);
     }
-    fclose(file1);
-    fclose(file2);
+    return 0;
 }
 
-int main()
-{
-    char srcFile[size], destFile[size];
-    printf("\nEnter the srcFile: ");
-    scanf("%s", srcFile);
-    printf("\nEnter the destFile: ");
-    scanf("%s", destFile);
-    discardPreproessor(srcFile, destFile);
+Token getNextToken(FILE *source, int *row, int *col) {
+    Token token;
+    token.row = *row;
+    token.col = *col;
+    token.type = TOKEN_UNKNOWN;
+    token.value[0] = '\0';
+
+    int c;
+    while ((c = fgetc(source)) != EOF) {
+        (*col)++;
+        
+        // Handle new lines
+        if (c == '\n') {
+            (*row)++;
+            *col = 0;
+            continue;
+        }
+
+        // Skip whitespace
+        if (isspace(c)) {
+            continue;
+        }
+
+        // Handle comments
+        if (c == '/') {
+            c = fgetc(source);
+            if (c == '/') { // Single-line comment
+                while ((c = fgetc(source)) != EOF && c != '\n') {
+                    (*col)++;
+                }
+                (*row)++;
+                *col = 0;
+                continue;
+            } else if (c == '*') { // Multi-line comment
+                while (1) {
+                    c = fgetc(source);
+                    if (c == EOF) break;
+                    if (c == '*') {
+                        c = fgetc(source);
+                        if (c == '/') {
+                            break;
+                        }
+                    }
+                    if (c == '\n') {
+                        (*row)++;
+                        *col = 0;
+                    }
+                }
+                continue;
+            } else {
+                ungetc(c, source); // Not a comment, put back the character
+                c = '/';
+            }
+        }
+
+        // Handle preprocessor directives
+        if (c == '#') {
+            token.type = TOKEN_PREPROCESSOR;
+            token.value[0] = c;
+            int i = 1;
+            while ((c = fgetc(source)) != EOF && c != '\n') {
+                token.value[i++] = c;
+                (*col)++;
+            }
+            token.value[i] = '\0';
+            return token;
+        }
+
+        // Handle string literals
+        if (c == '"') {
+            token.type = TOKEN_STRING;
+            int i = 0;
+            token.value[i++] = c;
+            while ((c = fgetc(source)) != EOF) {
+                token.value[i++] = c;
+                (*col)++;
+                if (c == '"') {
+                    break;
+                }
+            }
+            token.value[i] = '\0';
+            return token;
+        }
+
+        // Handle identifiers and keywords
+        if (isalpha(c) || c == '_') {
+            token.type = TOKEN_IDENTIFIER;
+            int i = 0;
+            token.value[i++] = c;
+            while (isalnum((c = fgetc(source))) || c == '_') {
+                token.value[i++] = c;
+                (*col)++;
+            }
+            ungetc(c, source);
+            token.value[i] = '\0';
+            if (isKeyword(token.value)) {
+                token.type = TOKEN_KEYWORD;
+            }
+            return token;
+        }
+
+        // Handle numbers
+        if (isdigit(c)) {
+            token.type = TOKEN_NUMBER;
+            int i = 0;
+            token.value[i++] = c;
+            while (isdigit((c = fgetc(source)))) {
+                token.value[i++] = c;
+                (*col)++;
+            }
+            ungetc(c, source);
+            token.value[i] = '\0';
+            return token;
+        }
+
+        // Handle operators
+        token.type = TOKEN_OPERATOR;
+        token.value[0] = c;
+        token.value[1] = '\0';
+        return token;
+    }
+
+    token.type = TOKEN_EOF;
+    return token;
+}
+
+int main() {
+    FILE *
     return 0;
 }
