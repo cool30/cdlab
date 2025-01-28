@@ -3,20 +3,19 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_TOKEN_LENGTH 100
-#define MAX_TOKENS 1000
+#define max_token_LENGTH 100
 
 typedef enum
 {
-    TOKEN_IDENTIFIER,
-    TOKEN_NUMBER,
-    TOKEN_OPERATOR,
-    TOKEN_KEYWORD,
-    TOKEN_STRING,
-    TOKEN_COMMENT,
-    TOKEN_PREPROCESSOR,
-    TOKEN_UNKNOWN,
-    TOKEN_EOF
+    token_ID,
+    token_NUMBER,
+    token_OPERATOR,
+    token_KEYWORD,
+    token_STRING,
+    token_COMMENT,
+    token_PREPROCESSOR,
+    token_UNKNOWN,
+    token_EOF
 } TokenType;
 
 typedef struct
@@ -24,7 +23,7 @@ typedef struct
     int row;
     int col;
     TokenType type;
-    char value[MAX_TOKEN_LENGTH];
+    char value[max_token_LENGTH];
 } Token;
 
 const char *keywords[] = {
@@ -47,7 +46,7 @@ Token getNextToken(FILE *source, int *row, int *col)
     Token token;
     token.row = *row;
     token.col = *col;
-    token.type = TOKEN_UNKNOWN;
+    token.type = token_UNKNOWN;
     token.value[0] = '\0';
 
     int c;
@@ -116,7 +115,7 @@ Token getNextToken(FILE *source, int *row, int *col)
         // Handle preprocessor directives
         if (c == '#')
         {
-            token.type = TOKEN_PREPROCESSOR;
+            token.type = token_PREPROCESSOR;
             token.value[0] = c;
             int i = 1;
             while ((c = fgetc(source)) != EOF && c != '\n')
@@ -131,7 +130,7 @@ Token getNextToken(FILE *source, int *row, int *col)
         // Handle string literals
         if (c == '"')
         {
-            token.type = TOKEN_STRING;
+            token.type = token_STRING;
             int i = 0;
             token.value[i++] = c;
             while ((c = fgetc(source)) != EOF)
@@ -150,7 +149,7 @@ Token getNextToken(FILE *source, int *row, int *col)
         // Handle identifiers and keywords
         if (isalpha(c) || c == '_')
         {
-            token.type = TOKEN_IDENTIFIER;
+            token.type = token_ID;
             int i = 0;
             token.value[i++] = c;
             while (isalnum((c = fgetc(source))) || c == '_')
@@ -162,7 +161,7 @@ Token getNextToken(FILE *source, int *row, int *col)
             token.value[i] = '\0';
             if (isKeyword(token.value))
             {
-                token.type = TOKEN_KEYWORD;
+                token.type = token_KEYWORD;
             }
             return token;
         }
@@ -170,11 +169,10 @@ Token getNextToken(FILE *source, int *row, int *col)
         // Handle numbers
         if (isdigit(c))
         {
-            token.type = TOKEN_NUMBER;
+            token.type = token_NUMBER;
             int i = 0;
             token.value[i++] = c;
-            while (isdigit((c = fgetc(source))))
-            {
+            while (isdigit((c = fgetc(source)))){
                 token.value[i++] = c;
                 (*col)++;
             }
@@ -184,28 +182,36 @@ Token getNextToken(FILE *source, int *row, int *col)
         }
 
         // Handle operators
-        token.type = TOKEN_OPERATOR;
+        token.type = token_OPERATOR;
         token.value[0] = c;
         token.value[1] = '\0';
         return token;
     }
 
-    token.type = TOKEN_EOF;
+    token.type = token_EOF;
     return token;
 }
 
 int main()
 {
-    Token *tokens = NULL;
     char filename[128];
     printf("\nEnter the filename: ");
     scanf("%s", filename);
-    FILE *file1 = fopen("lab3_1.c", "r");
-    tokens = getNextToken(file1, tokens->row, tokens->col);
-    while (tokens->value != EOF)
+
+    FILE *file1 = fopen(filename, "r");
+    if (file1 == NULL)
     {
-        printf("%c", tokens->value);
-        tokens = getNextToken(file1, 0, 0);
+        perror("Error opening file");
+        return 1;
+    }
+
+    int row = 1, col = 0;
+    Token token = getNextToken(file1, &row, &col);
+
+    while (token.type != token_EOF)
+    {
+        printf("Row: %d, Col: %d, Type: %d, Value: %s\n", token.row, token.col, token.type, token.value);
+        token = getNextToken(file1, &row, &col);
     }
 
     fclose(file1);
