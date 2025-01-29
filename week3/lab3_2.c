@@ -208,9 +208,10 @@ int main()
     int row = 1, col = 0;
     Token token = getNextToken(file1, &row, &col);
 
+    printf("\nFormat: <value,token_type,row,col>");
     while (token.type != token_EOF)
     {
-        printf("Row: %d, Col: %d, Type: %d, Value: %s\n", token.row, token.col, token.type, token.value);
+        printf("<%d, %d, %d, %s>\n", token.row, token.col, token.type, token.value);
         token = getNextToken(file1, &row, &col);
     }
 
