@@ -1,0 +1,29 @@
+#include<stdio.h>
+
+int sum(int a, int b)
+{
+    int s = a + b;
+    return s;
+}
+int search(int *arr, int key)
+{
+    int i;
+    for (i = 0; i < 10; i++)
+    {
+        if (arr[i] == key)
+            return 1;
+        else
+            return 0;
+    }
+}
+void main()
+{
+    int a[20], i, sum;
+    int status;
+    printf("Enter array elements:");
+    for (i = 0; i < 10; ++i)
+        scanf("%d", &a[i]);
+    sum = a[0] + a[4];
+    status = search(a, sum);
+    printf("%d", status);
+}
