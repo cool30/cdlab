@@ -1,5 +1,5 @@
-#include <ctype.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 
 #define MAX_TOKEN_LENGTH 100
@@ -255,7 +255,8 @@ Token getNextToken(FILE *source, int *row, int *col)
             token.type = token_NUMBER;
             int i = 0;
             token.value[i++] = c;
-            while (isdigit((c = fgetc(source)))){
+            while (isdigit((c = fgetc(source))))
+            {
                 token.value[i++] = c;
                 (*col)++;
             }
@@ -268,7 +269,7 @@ Token getNextToken(FILE *source, int *row, int *col)
         token.type = token_OPERATOR;
         token.value[0] = c;
         token.value[1] = '\0';
-        
+
         char output[512];
         // Check for 2-character operators
         if (c == '+' || c == '-' || c == '!' || c == '<' || c == '>')
@@ -289,37 +290,37 @@ Token getNextToken(FILE *source, int *row, int *col)
         if (isArithmeticOp(token.value))
         {
             snprintf(output, sizeof(output), "<%s, Arithmetic operator, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else if (isRelationOp(token.value))
         {
             snprintf(output, sizeof(output), "<%s, Relational Operator, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else if (isLogicalOp(token.value))
         {
             snprintf(output, sizeof(output), "<%s, Logical Operator, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else if (isNumericalConstant(token.value))
         {
             snprintf(output, sizeof(output), "<%s, num, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else if (isSpecialSymbol(token.value))
         {
             snprintf(output, sizeof(output), "<%s, Special Symbol, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else if (isKeyword(token.value))
         {
             snprintf(output, sizeof(output), "<%s, Keyword, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
         else
         {
             snprintf(output, sizeof(output), "<%s, Identifier, %d, %d>\n", token.value, token.row, token.col);
-            printf("%s", output);
+            // printf("%s",output);
         }
 
         return token;
