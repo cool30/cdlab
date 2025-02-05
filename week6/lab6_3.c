@@ -1,89 +1,114 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdlib.h>
 
-#define SIZE 1024
+char wording[128];
+int indx = 0;
 
-void toUpperCase(char *word)
+/*
+S → aAcBe
+A → Ab|b //has left recusrion so below 2 lines removes left recursion
+    A -> bA'
+    A'-> bA' | null
+B → d
+*/
+
+void S();
+void A();
+void Aprime();
+void B();
+
+void valid()
 {
-    int i = 0;
-    while (word[i] != '\0')
-    {
-        if (word[i] >= 'a' && word[i] <= 'z')
-        {
-            word[i] -= 32;
-        }
-        i++;
-    }
+    printf("\n===================SUCCESS!==================\n");
+    exit(0);
 }
 
-int isKeyword(char *word, char **keywords, int num_keywords)
+void invalid()
 {
-    for (int i = 0; i < num_keywords; i++)
-    {
-        if (strcmp(word, keywords[i]) == 0)
-        {
-            return 1;
-        }
-    }
-    return 0;
+    printf("\nError char : %c at index %d", wording[indx], indx);
+    printf("\n===================ERROR!==================\n");
+    exit(0);
 }
 
-void keyword_to_Uppercase(char **keywords, int num_keywords, char *srcFile, char *destFile)
+void A()
 {
-    char buffer[SIZE];
-    FILE *file1 = fopen(srcFile, "r");
-    FILE *file2 = fopen(destFile, "w");
-    
-    if (!file1 || !file2) {
-        printf("Error opening files.\n");
+    if (wording[indx] == 'b')
+    {
+        indx++;
+        Aprime();
+    }
+    else if (wording[indx] == '$')
+    {
         return;
     }
+}
 
-    char c = fgetc(file1);
-    while (c != EOF)
+void Aprime()
+{
+    if (wording[indx] == 'b')
     {
-        int k = 0;
-        // Skip non-alphabetic characters and get the next word
-        while (c != EOF && !isalpha(c)) 
-        {
-            fputc(c, file2); // Write punctuation/space directly to the output file
-            c = fgetc(file1);
-        }
+        indx++;
+        Aprime();
+    }
+    else if (wording[indx] == '$')
+    {
+        return;
+    }
+}
 
-        // Read the word into the buffer
-        while (c != EOF && isalpha(c)) 
-        {
-            buffer[k++] = c;
-            c = fgetc(file1);
-        }
-        buffer[k] = '\0';
+void B()
+{
+    if (wording[indx] == 'd')
+    {
+        indx++;
+        return;
+    }
+    else
+    {
+        invalid();
+    }
+}
 
-        if (k > 0 && isKeyword(buffer, keywords, num_keywords))
+void S()
+{
+    if (wording[indx] == 'a')
+    {
+        indx++;
+        A();
+        if (wording[indx] == 'c')
         {
-            toUpperCase(buffer);
+            indx++;
+            B();
+            if (wording[indx] == 'e')
+            {
+                indx++;
+                return;
+            }
         }
-
-        // Write the word (or uppercase word) to the output file
-        if (k > 0)
+        else
         {
-            fprintf(file2, "%s", buffer);
+            invalid();
         }
     }
-
-    fclose(file1);
-    fclose(file2);
+    else
+    {
+        invalid();
+    }
 }
 
 int main()
 {
-    char srcFile[SIZE], destFile[SIZE];
-    char *keywords[] = {"int", "if", "void", "char","return"};
-    printf("\nEnter the srcFile: ");
-    scanf("%s", srcFile);
-    printf("\nEnter the destFile: ");
-    scanf("%s", destFile);
-    int num_keywords = sizeof(keywords) / sizeof(keywords[0]);
-    keyword_to_Uppercase(keywords, num_keywords, srcFile, destFile);
+    printf("\nEner the message: ");
+    scanf("%s", wording);
+    S();
+    if (wording[indx] == '$')
+    {
+        valid();
+    }
+    else
+    {
+        invalid();
+    }
     return 0;
 }

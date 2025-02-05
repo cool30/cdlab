@@ -1,55 +1,112 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define size 1024
+char wording[128];
+int indx = 0;
 
-void discardPreproessor(char *srcFile, char *destFile)
+/*
+S→UVW
+U →(S) | aSb | d
+V → aV | null
+W → cW | null
+*/
+
+void S();
+void U();
+void V();
+void W();
+
+void valid()
 {
-    FILE *file1 = fopen(srcFile, "r");
-    FILE *file2 = fopen(destFile, "w");
-    char c = fgetc(file1);
-    while (c != EOF)
+    printf("\n===================SUCCESS!==================\n");
+    exit(0);
+}
+
+void invalid()
+{
+    printf("\n===================ERROR!==================\n");
+    exit(0);
+}
+
+void W()
+{
+    if (wording[indx] == 'c')
     {
-        // this is done if string has pre-processor directives word in print statement
-        if (c == '\"')
-        {
-            fputc(c, file2);
-            c = fgetc(file1);
-            while (c != '\"' && c != EOF)
-            {
-                fputc(c, file2);
-                c = fgetc(file1);
-            }
-            if (c == '\"')
-            {
-                fputc(c, file2);
-            }
-        }
-        // logic to skip directives
-        else if (c == '#')
-        {
-            while (c != '\n' && c != EOF)
-            {
-                c = fgetc(file1);
-            }
-        }
-        // any other characters
-        else
-        {
-            fputc(c, file2);
-        }
-        c = fgetc(file1);
+        indx++;
+        W();
     }
-    fclose(file1);
-    fclose(file2);
+    else if (wording[indx] == '$')
+    {
+        return;
+    }
+}
+
+void V()
+{
+    if (wording[indx] == 'a')
+    {
+        indx++;
+        V();
+    }
+    else if (wording[indx] == '$')
+    {
+        return;
+    }
+}
+
+void U()
+{
+    if (wording[indx] == '(')
+    {
+        indx++;
+        S();
+        if (wording[indx] == ')')
+        {
+            indx++;
+            return;
+        }
+    }
+    else if (wording[indx] == 'a')
+    {
+        indx++;
+        S();
+        if (wording[indx] == 'b')
+        {
+            indx++;
+            return;
+        }
+    }
+    else if (wording[indx] == 'd')
+    {
+        indx++;
+        return;
+    }
+}
+
+void S()
+{
+    if (wording[indx] == '$')
+    {
+        return;
+    }
+    U();
+    V();
+    W();
 }
 
 int main()
 {
-    char srcFile[size], destFile[size];
-    printf("\nEnter the srcFile: ");
-    scanf("%s", srcFile);
-    printf("\nEnter the destFile: ");
-    scanf("%s", destFile);
-    discardPreproessor(srcFile, destFile);
+    printf("\nEnter the message: ");
+    scanf("%s", wording);
+    S();
+    if (wording[indx] == '$')
+    {
+        valid();
+    }
+    else
+    {
+        invalid();
+    }
     return 0;
 }

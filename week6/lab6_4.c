@@ -6,15 +6,16 @@ char wording[128];
 int indx = 0;
 
 /*
-S→a | > | ( T )
-T→T,S | S  // has left recusrion so below 2 lines removes left recursion
-    T->S T'
-    T'->,ST' | null
+S →(L) | a
+L → L,S | S //has left recusrion so below 2 lines removes left recursion
+
+    L -> SL'
+    L' -> ,SL' | null
 */
 
 void S();
-void T();
-void Tprime();
+void L();
+void Lprime();
 
 void valid()
 {
@@ -28,37 +29,37 @@ void invalid()
     exit(0);
 }
 
-void Tprime()
+void Lprime()
 {
     if (wording[indx] == ',')
     {
         indx++;
         S();
-        Tprime();
+        Lprime();
     }
     else if (wording[indx] == '$')
     {
-        return ;
+        return;
     }
 }
 
-void T()
+void L()
 {
     S();
-    Tprime();
+    Lprime();
 }
 
 void S()
 {
-    if (wording[indx] == 'a' || wording[indx] == '>')
+    if (wording[indx] == 'a')
     {
         indx++;
     }
     else if (wording[indx] == '(')
     {
         indx++;
-        T();
-        if (wording[indx] == ')')
+        L();
+        if (wording[indx]==')')
         {
             indx++;
             return;
@@ -73,7 +74,7 @@ void S()
 
 int main()
 {
-    printf("Enter the message: ");
+    printf("\nEnter the string input: ");
     scanf("%s", wording);
     S();
     if (wording[indx] == '$')
