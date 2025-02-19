@@ -1,41 +1,59 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
-void removeSpace(char *srcFile, char *destFile)
+/*
+
+Program  --->  main(){ declarations statement-list }
+Declarations --->  data-type identifier-list; declarations | null
+data-type ---> int | char
+
+id, is alpha  id is beta
+identifier-list ---> id identifier-list'
+identifier-list' ---> id, identifier-list' | null
+
+id[number], is alpha  id[number] is beta
+identifier-list ---> id[number] identifier-list''
+identifier-list'' ---> id[number], identifier-list'' | null
+
+statement_list ---> statement statement_list | null
+statement  --->  assign-stat; | decision_stat
+assign_stat --->  id = expn
+expn --->  simple-expn eprime
+eprime ---> relop simple-expn | null
+simple-exp --->  term seprime
+seprime ---> addop term seprime | null 
+term  --->  factor tprime
+tprime ---> mulop factor tprime | null
+factor --->  id | num
+decision-stat --->  if (expn) {statement_list} dprime
+dprime ---> else {statement_list} | null
+relop ---> == | != | <= | >= | > | <
+addop --->  + | -
+mulop ---> * | / | %
+*/
+
+void invalid()
 {
-    FILE *file1 = fopen(srcFile, "r");
-    FILE *file2 = fopen(destFile, "w");
-    char c = fgetc(file1);
-    while (c != EOF)
-    {
-        if (c == ' ')
-        {
-            while (c == ' ')
-            {
-                c = fgetc(file1);
-            }
-            if (c != ' ')
-            {
-                fputc(' ', file2);
-                fputc(c, file2);
-            }
-        }
-        else
-        {
-            fputc(c, file2);
-        }
-        c = fgetc(file1);
-    }
-    fclose(file1);
-    fclose(file2);
+    printf("-----------------ERROR!----------------\n");
+    exit(0);
+}
+void valid()
+{
+    printf("----------------SUCCESS!---------------\n");
+    exit(0);
 }
 
-int main()
+void Program()
 {
-    char srcFile[1024], destFile[1024];
-    printf("\nEnter the srcFile: ");
-    scanf("%s", srcFile);
-    printf("\nEnter the destFile: ");
-    scanf("%s", destFile);
-    removeSpace(srcFile, destFile);
-    return 0;
+
+}
+
+void main()
+{
+    char word[128];
+    printf("Enter the word: ");
+    scanf("%s", word);
+    Program();
 }
